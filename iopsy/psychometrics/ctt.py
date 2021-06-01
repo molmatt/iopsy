@@ -64,3 +64,21 @@ def alpha_if_deleted(data):
     for col, df in iterdrop(data):
         res.append(cronbachs_alpha(df))
     return Series(res, index = data.columns)
+
+def item_loadings(data):
+    """Items' Loadings on to a Single Factor
+    
+    Calculate all of the item loadings on to a single factor. This relies heavily on FactorAnalyzer. Its
+    really just a wrapper to handle the little things.
+    
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        df containing the item responses for the scale
+    """
+    from factor_analyzer.factor_analyzer import FactorAnalyzer
+    from pandas import Series
+    fa = FactorAnalyzer(n_factors=1, rotation = None)
+    fa.fit(data)
+    ldng = [val[0] for val in fa.loadings_]
+    return Series(ldng, index = data.columns)
