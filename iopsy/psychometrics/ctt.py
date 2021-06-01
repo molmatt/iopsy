@@ -114,3 +114,28 @@ def sd_if_deleted(data):
     for col, df in iterdrop(data):
         res.append(df.mean(axis = 1).std())
     return Series(res, index = data.columns)
+
+def ctt_item_stats(data):
+    """Calculate the Typical Classical Test Theory Item Statistics
+    
+    Runs a battery of classical test theory item statistics. Caclulates the item mean, item sd,
+    scale mean's mean if item deleted, scale mean's sd if item deleted, corrected item total 
+    correlation, item loadings on factor, and cronbach's alpha if item deleted.
+    
+    Parameters
+    ----------
+    data : pd.DataFrame
+        df containing the item responses for the scale
+    """
+    from pandas import DataFrame
+    analyses = {
+        'mean': data.mean(),
+        'sd': data.std(),
+        'mean_if_deleted': mean_if_deleted(data),
+        'sd_if_deleted': sd_if_deleted(data),
+        'citr': citr(data),
+        'loadings': item_loadings(data),
+        'alpha_if_deleted': alpha_if_deleted(data)
+    }
+    return DataFrame(analyses)
+
