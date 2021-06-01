@@ -82,3 +82,35 @@ def item_loadings(data):
     fa.fit(data)
     ldng = [val[0] for val in fa.loadings_]
     return Series(ldng, index = data.columns)
+
+def mean_if_deleted(data):
+    """Mean Scale Mean if Item is Deleted
+    
+    The mean scale mean if the item is deleted.
+    
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        df containing the item responses for the scale
+    """
+    from pandas import Series
+    res = []
+    for col, df in iterdrop(data):
+        res.append(df.mean(axis = 1).mean())
+    return Series(res, index = data.columns)
+
+def sd_if_deleted(data):
+    """Standard Deviation of Scale Mean if Item is Deleted
+    
+    The standard deviation of the scale mean if the item is deleted.
+    
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        df containing the item responses for the scale
+    """
+    from pandas import Series
+    res = []
+    for col, df in iterdrop(data):
+        res.append(df.mean(axis = 1).std())
+    return Series(res, index = data.columns)
