@@ -47,3 +47,20 @@ def iterdrop(data):
     """
     for col in data.columns:
         yield(col, data.drop(col, axis = 1))
+        
+def alpha_if_deleted(data):
+    """Cronbach's Alpha if Item Deleted
+    
+    The Cronbach's Alpha if the item were to be deleted. This is meant to assist in the scale refinement
+    when seeking to improve reliability. This seems to be largely popularized by its inclusion in SPSS.
+    
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        df containing the item responses for the scale
+    """
+    from pandas import Series
+    res = []
+    for col, df in iterdrop(data):
+        res.append(cronbachs_alpha(df))
+    return Series(res, index = data.columns)
