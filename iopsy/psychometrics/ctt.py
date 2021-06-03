@@ -165,3 +165,18 @@ def spearman_brown(old_rxx, new_rxx = None, n = None):
     if new_rxx is None:
         return n*old_rxx/(1 + (n-1)*old_rxx)
 
+def reliability_correction(rxy, rxx = 1, ryy = 1):
+    """Correct Relationship for Unreliablity
+    
+    Correct a relationship for unreliability in the x or y. Reliabilities default to 1, which is the 
+    equivalent of not correcting for it.
+    
+    rxy : float between -1 and 1
+        the relationship between x and y
+    rxx : float between 0 and 1
+        the reliability of the x variable
+    ryy : float between 0 and 1
+        the reliability of the y variable
+    """
+    from numpy import sqrt
+    return(rxy/sqrt(rxx * ryy))
