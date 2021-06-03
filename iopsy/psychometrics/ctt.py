@@ -139,3 +139,29 @@ def ctt_item_stats(data):
     }
     return DataFrame(analyses)
 
+def spearman_brown(old_rxx, new_rxx = None, n = None):
+    """Spearman Brown Formula
+    
+    A formula that ties together the current reliability (old_rxx), a new reliability (new_rxx), 
+    and a factor (n) by which to increase or decrease the current measure length. By rearranging the 
+    formula, it can be solved for the new reliability, or the scale lengthening factor needed to get 
+    to that new reliability. Leaving a value blank as None solves for that value.
+    
+    This was a case of simulatenous discovery, being discovered separately by Brown (1910), and Spearman
+    (1910). It was Brown's dissertation work, and the current formulation is Brown's.
+    
+    Parameters
+    ----------
+    old_rxx : float between 0 and 1
+        the reliability of the old, or original measure
+    new_rxx : float between 0 and 1
+        the reliability of the new measure, if left as None, this is the value that will be calculated
+    n : number >= 0
+        the factor by which the scale should be increased (if over 1) or decreased (if under 1). If 
+        left as None, this is the value that will be calculated
+    """
+    if n is None:
+        return (new_rxx*(1-old_rxx))/(old_rxx*(1-new_rxx))
+    if new_rxx is None:
+        return n*old_rxx/(1 + (n-1)*old_rxx)
+
