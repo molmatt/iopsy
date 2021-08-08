@@ -46,5 +46,5 @@ def fet_series(by, score, referent):
     idx, pval = [], []
     for focal, tab in contingency_generator(by, score, referent):
         idx.append(focal)
-        pval = fisher_exact(tab)[1]
+        pval.append(fisher_exact(tab)[1])
     return(pd.Series(pval, index = idx, name = 'fet_p'))
