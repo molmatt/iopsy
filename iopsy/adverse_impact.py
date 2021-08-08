@@ -129,6 +129,25 @@ def determine_referent(sr, min_ref = 5):
     sr = sr[sr['n'] >= min_ref].copy()
     return(sr.sort_values(['sr','n'], ascending = False).index[0])
 
+def impact_ratios(sr, referent):
+    """Calculate Impact Ratios
+    
+    Impact ratios are the measure of the 4/5ths rule. Essentially it is the ratio of every groups 
+    selection rate relative to the selection rate of the referent group. If this resulting ratio
+    of ratios is less than 4/5ths (.8) then this is considered evidence of adverse impact.
+    
+    Parameters
+    ----------
+    sr : pandas.DataFrame
+        The output of selection_rates. A dataframe with the demographic groups as the index, and two
+        columns, sr (selection rates) and n (sample size).
+    referent : string
+        Name of the group that is serving as the referent.
+    """
+    ir = sr['sr']/sr.loc[referent,'sr']
+    ir.name = 'ir'
+    return ir
+
 def contingency_generator(by, score, referent):
     """Contingency Table Generator
     
@@ -142,6 +161,8 @@ def contingency_generator(by, score, referent):
         variable of some sort.
     score : pandas.Series of Booleans
         A series of booleans indicating whether the individual passed (True) or failed (False).
+    referent : string
+        Name of the group that is serving as the referent.
     """
     tab = pd.crosstab(by, score)
     for focal in tab.index.drop(referent):
@@ -160,7 +181,7 @@ def fet_series(by, score, referent):
     score : pandas.Series of Booleans
         A series of booleans indicating whether the individual passed (True) or failed (False)
     referent : string
-        Name of the group that is serving as the referent
+        Name of the group that is serving as the referent.
         
     Returns
     -------
