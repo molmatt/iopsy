@@ -1,4 +1,4 @@
-from analysis import Analysis
+from .analysis import Analysis
 
 class AdverseImpact(Analysis):
     """Adverse Impact Analysis
@@ -50,7 +50,8 @@ class AdverseImpact(Analysis):
         self.p = fet_series(data[x], self.score, self.referent)
         
     def summary(self):
-        return(pd.concat([self.selection_rates, self.effect, self.p], axis = 1))
+        from pandas import concat
+        return(concat([self.selection_rates, self.effect, self.p], axis = 1))
             
 def cut(y, score = None, groups = None):
     """Implement a Cutscore
@@ -101,7 +102,8 @@ def selection_rates(score, by):
     -------
     pandas.DataFrame with groups as index and selection rates (sr) and sample size (n) as columns
     """
-    df = pd.concat([score, by], axis = 1)
+    from pandas import concat
+    df = concat([score, by], axis = 1)
     res = df.groupby(by).agg(['mean', 'count'])
     res.columns = ['sr', 'n']
     return res
@@ -164,7 +166,8 @@ def contingency_generator(by, score, referent):
     referent : string
         Name of the group that is serving as the referent.
     """
-    tab = pd.crosstab(by, score)
+    from pandas import crosstab
+    tab = crosstab(by, score)
     for focal in tab.index.drop(referent):
         yield(focal, tab.loc[[focal, referent]])
 
@@ -188,8 +191,9 @@ def fet_series(by, score, referent):
     pandas.Series of p values from the fisher exact tests.
     """
     from scipy.stats import fisher_exact
+    from pandas import Series
     idx, pval = [], []
     for focal, tab in contingency_generator(by, score, referent):
         idx.append(focal)
         pval.append(fisher_exact(tab)[1])
-    return(pd.Series(pval, index = idx, name = 'fet_p'))
+    return(Series(pval, index = idx, name = 'fet_p'))
