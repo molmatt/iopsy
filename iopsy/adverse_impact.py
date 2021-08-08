@@ -1,7 +1,7 @@
 from analysis import Analysis
 
 class AdverseImpact(Analysis):
-    def __init__(self, data, x, y = None, cutscore = None, groups = None, filters = None, 
+    def __init__(self, data, x, y, cutscore = None, groups = None, filters = None, 
                  referent = None, min_ref = 5):
         super().__init__(data, 
                          analysis = 'AdverseImpact', 
@@ -11,11 +11,12 @@ class AdverseImpact(Analysis):
         self.groups = groups
         self.score = cut(data[y], score = cutscore, groups = groups)
         self.selection_rates = selection_rates(self.score, data[x])
-        
         if referent is not None:
             self.referent = referent
         else:
             self.referent = determine_referent(self.selection_rates, min_ref = min_ref)
+        self.effect = impact_ratios(self.selection_rates, referent = self.referent)
+        self.p = fet_series(data[x], self.score, self.referent)
             
 def cut(y, score = None, groups = None):
     if score is not None:
