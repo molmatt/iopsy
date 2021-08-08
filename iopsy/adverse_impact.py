@@ -9,13 +9,13 @@ class AdverseImpact(Analysis):
                          filters = filters)
         self.cutscore = cutscore
         self.groups = groups
-        self.score = cut(data[y], cutscore = cutscore, groups = groups)
+        self.score = cut(data[y], score = cutscore, groups = groups)
         self.selection_rates = selection_rates(self.score, data[x])
         
         if referent is not None:
             self.referent = referent
         else:
-            self.referent = determine_referent(self.selection_rates, min_ref = 5)
+            self.referent = determine_referent(self.selection_rates, min_ref = min_ref)
             
 def cut(y, score = None, groups = None):
     if score is not None:
