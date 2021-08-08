@@ -25,3 +25,7 @@ def selection_rates(score, by):
     res = df.groupby(by).agg(['mean', 'count'])
     res.columns = ['sr', 'n']
     return res
+
+def determine_referent(sr, min_n = 5):
+    sr = sr[sr['n'] >= min_n].copy()
+    return(sr.sort_values(['sr','n'], ascending = False).index[0])
