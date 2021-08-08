@@ -17,6 +17,9 @@ class AdverseImpact(Analysis):
             self.referent = determine_referent(self.selection_rates, min_ref = min_ref)
         self.effect = impact_ratios(self.selection_rates, referent = self.referent)
         self.p = fet_series(data[x], self.score, self.referent)
+        
+    def summary(self):
+        return(pd.concat([self.selection_rates, self.effect, self.p], axis = 1))
             
 def cut(y, score = None, groups = None):
     if score is not None:
