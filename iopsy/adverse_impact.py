@@ -1,16 +1,21 @@
 from analysis import Analysis
 
 class AdverseImpact(Analysis):
-    def __init__(self, data, cutscore, x, y = None, filters = None, referent = None):
+    def __init__(self, data, x, y = None, cutscore = None, groups = None, filters = None, 
+                 referent = None, min_ref = 5):
         super().__init__(data, 
                          analysis = 'AdverseImpact', 
                          x = x, y = y, 
                          filters = filters)
         self.cutscore = cutscore
+        self.groups = groups
+        self.score = cut(data[y], cutscore = cutscore, groups = groups)
+        self.selection_rates = selection_rates(self.score, data[x])
+        
         if referent is not None:
             self.referent = referent
         else:
-            self.referent = referent
+            self.referent = determine_referent(self.selection_rates, min_ref = 5)
             
 def cut(y, score = None, groups = None):
     if score is not None:
@@ -26,6 +31,6 @@ def selection_rates(score, by):
     res.columns = ['sr', 'n']
     return res
 
-def determine_referent(sr, min_n = 5):
-    sr = sr[sr['n'] >= min_n].copy()
+def determine_referent(sr, min_ref = 5):
+    sr = sr[sr['n'] >= min_ref].copy()
     return(sr.sort_values(['sr','n'], ascending = False).index[0])
