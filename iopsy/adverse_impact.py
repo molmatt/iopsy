@@ -19,3 +19,9 @@ def cut(y, score = None, groups = None):
         if isinstance(groups, str):
             groups = [groups]
         return(y.isin(groups))
+    
+def selection_rates(score, by):
+    df = pd.concat([score, by], axis = 1)
+    res = df.groupby(by).agg(['mean', 'count'])
+    res.columns = ['sr', 'n']
+    return res
