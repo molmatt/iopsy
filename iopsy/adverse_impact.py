@@ -34,3 +34,16 @@ def selection_rates(score, by):
 def determine_referent(sr, min_ref = 5):
     sr = sr[sr['n'] >= min_ref].copy()
     return(sr.sort_values(['sr','n'], ascending = False).index[0])
+
+def contingency_generator(by, score, referent):
+    tab = pd.crosstab(by, score)
+    for focal in tab.index.drop(referent):
+        yield(focal, tab.loc[[focal, referent]])
+
+def fet_series(by, score, referent):
+    from scipy.stats import fisher_exact
+    idx, pval = [], []
+    for focal, tab in contingency_generator(by, score, referent):
+        idx.append(focal)
+        pval = fisher_exact(tab)[1]
+    return(pd.Series(pval, index = idx))
