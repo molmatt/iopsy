@@ -52,6 +52,14 @@ class AdverseImpact(Analysis):
     def summary(self):
         from pandas import concat
         return(concat([self.selection_rates, self.effect, self.p], axis = 1))
+    
+    def graph(self, **kwargs):
+        from seaborn import barplot
+        sr = self.selection_rates
+        ir = sr.loc[self.referent, 'sr']*.8
+        ax = barplot(x = sr.index, y = sr['sr'], **kwargs)
+        ax.set(ylabel = 'selection rate')
+        ax.axhline(ir, ls = '--', color = 'black')
             
 def cut(y, score = None, groups = None):
     """Implement a Cutscore
