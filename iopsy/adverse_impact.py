@@ -1,39 +1,39 @@
 from .analysis import Analysis
 
 class AdverseImpact(Analysis):
-    """Adverse Impact Analysis
-    
-    An overarching class to handle adverse impact analysis workflows.
-    
-    Parameters
-    ----------
-    data : pandas.DataFrame
-    x : str column name
-        The column name of the categorical variable across which to look for adverse impact.
-        This is typically a demographic variable indicating a protected class (e.g., 'gender',
-        'ethnicity').
-    y : str column name
-        The column name of the variable containing the score upon which hiring decisions will
-        be made. If the column is numeric, a cutscore must be specified. If the column is 
-        categorical, a string or list of strings must be specified as the passing group(s).
-    cutscore : numeric
-        The cutscore to be used for deciding what is passing and what is failing. Any number 
-        that is this number or greater will be considered a pass, anything less than that will
-        be a fail. This must be specified if y indicates a numeric variable.
-    groups : string or list of strings
-        The groups that should be counted as passing. Any group that isn't specified here will
-        be coded as a fail.
-    referent : string or None
-        If specified this forces this group to serve as the referent against which all other
-        groups will be compared. If left as None this will be inferred from the data using the
-        logic specified in determine_referent. Essentially, highest passing group with some 
-        additional considerations for small sample sizes and ties.
-    min_ref : int
-        The minimum sample size a group must have in order to be considered for election as 
-        referent
-    """
     def __init__(self, data, x, y, cutscore = None, groups = None, filters = None, 
                  referent = None, min_ref = 5):
+        """Adverse Impact Analysis
+
+        An overarching class to handle adverse impact analysis workflows.
+
+        Parameters
+        ----------
+        data : pandas.DataFrame
+        x : str column name
+            The column name of the categorical variable across which to look for adverse impact.
+            This is typically a demographic variable indicating a protected class (e.g., 'gender',
+            'ethnicity').
+        y : str column name
+            The column name of the variable containing the score upon which hiring decisions will
+            be made. If the column is numeric, a cutscore must be specified. If the column is 
+            categorical, a string or list of strings must be specified as the passing group(s).
+        cutscore : numeric
+            The cutscore to be used for deciding what is passing and what is failing. Any number 
+            that is this number or greater will be considered a pass, anything less than that will
+            be a fail. This must be specified if y indicates a numeric variable.
+        groups : string or list of strings
+            The groups that should be counted as passing. Any group that isn't specified here will
+            be coded as a fail.
+        referent : string or None
+            If specified this forces this group to serve as the referent against which all other
+            groups will be compared. If left as None this will be inferred from the data using the
+            logic specified in determine_referent. Essentially, highest passing group with some 
+            additional considerations for small sample sizes and ties.
+        min_ref : int
+            The minimum sample size a group must have in order to be considered for election as 
+            referent
+        """
         super().__init__(data, 
                          analysis = 'AdverseImpact', 
                          x = x, y = y, 
@@ -50,17 +50,31 @@ class AdverseImpact(Analysis):
         self.p = fet_series(data[x], self.score, self.referent)
         
     def summary(self):
+        """Summary of Results
+        
+        Provide a brief summary of the results. One row for each group included in the analysis and
+        4 columns indicating the selection rate (sr), sample size (n), impact ratio (ir), and p-value
+        from a fishers exact test (fet_p)
+        """
         from pandas import concat
         return(concat([self.selection_rates, self.effect, self.p], axis = 1))
     
     def graph(self, **kwargs):
+        """Graph Results
+        
+        Bar graph of the selection rates. The bar for impact is displayed in dashed black. Any 
+        selection ratio below that bar is in violation of the 4/5ths rule. Selection rates are 
+        displayed beneath the tip of the bar.
+        """
         from seaborn import barplot
         sr = self.selection_rates
         ir = sr.loc[self.referent, 'sr']*.8
         ax = barplot(x = sr.index, y = sr['sr'], **kwargs)
         ax.set(ylabel = 'selection rate')
         ax.axhline(ir, ls = '--', color = 'black')
-            
+        for idx, val in enumerate(sr['sr']):
+            ax.text(idx - .1, val-.02, str(round(val, 2))[1:], color = 'white', fontweight = 'bold')
+        
 def cut(y, score = None, groups = None):
     """Implement a Cutscore
     
