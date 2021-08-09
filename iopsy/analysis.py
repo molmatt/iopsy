@@ -20,4 +20,14 @@ def drop_small_n(data, x, n = None, prop = None):
         props = vc/vc.sum()
         keep = vc[props > prop].index
     return data[data[x].isin(keep)]
-        
+
+def hampel_identifier(x):
+    from scipy.stats import median_abs_deviation
+    return((x-x.median())/median_abs_deviation(x, scale = 'normal'))
+
+def standard_score(x):
+    return((x-x.mean())/x.std())
+
+def iqr_score(x, q = .25):
+    scale = x.quantile(1-q)-x.quantile(q)
+    return(x-x.median()/scale)
