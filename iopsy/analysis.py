@@ -31,3 +31,7 @@ def standard_score(x):
 def iqr_score(x, q = .25):
     scale = x.quantile(1-q)-x.quantile(q)
     return(x-x.median()/scale)
+
+def drop_outlier(data, x, method = standard_score, val = 2, **kwargs):
+    bool_mask = method(data[x], **kwargs).abs() < val
+    return(data[bool_mask])
