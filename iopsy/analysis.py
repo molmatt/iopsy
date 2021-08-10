@@ -4,7 +4,11 @@ class Analysis:
 
         This is a generic base class for building more specific analyses from.
         """
-        self.data = data
+        if not isinstance(x, list):
+            x = [x]
+        if not isinstance(y, list):
+            y = [y]
+        self.data = data[x + y]
         self.analysis = analysis
         self.x = x
         self.y = y
@@ -83,7 +87,7 @@ def iqr_score(x, q = .25):
     scale = x.quantile(1-q)-x.quantile(q)
     return(x-x.median()/scale)
 
-def drop_outlier(data, x, method = standard_score, val = 2, **kwargs):
+def drop_outlier(data, x, method = standard_score, less = False val = 2, **kwargs):
     """Drop Outliers
     
     Drop rows from the dataframe based on whether they are outlying on the column specified
@@ -102,5 +106,8 @@ def drop_outlier(data, x, method = standard_score, val = 2, **kwargs):
     val : numeric
         The critical value beyond which any value will be considered outlying.
     """
-    bool_mask = method(data[x], **kwargs).abs() < val
+    if less:
+        bool_mask = method(data[x], **kwargs).abs() > val
+    else:
+        bool_mask = method(data[x], **kwargs).abs() < val
     return(data[bool_mask])
