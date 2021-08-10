@@ -16,33 +16,33 @@ class Analysis:
         self.p = None
         self.effect = None
         
-def drop_small_n(data, x, n = None, prop = None):
-    """Drop Small Samples
+def cat_count(x):
+    """Category Count
     
-    Drop rows from dataframe based off of the rarity of its value for a given column. This 
-    is useful for removing rows that represent fringe cases. The rarity threshold is
-    specified by either n, for a raw number, or prop, for a proportion. This function could
-    be used to drop rows for any group representing less than 5% of the population. This is
-    useful when doing analyses that may be sensitive to small n.
+    Calculate the count of each category and return a series of the same length as x with
+    these counts as values in place of the corresponding category. This can be used with 
+    filtering to remove less prevalent groups, or conversely to limit your search to only them.
     
     Parameters
     ----------
-    data : pandas.DataFrame
-        The DataFrame to drop rows from
-    x : string column name
-        The name of the column to use for determining which rows to drop
-    n : numeric or None
-        The minimum n of the subgroup to be kept in the dataframe. 
-    prop : float between 0 and 1
-        The minimum proportion to be kept in the dataframe.
+    x : pandas.Series
     """
-    vc = data[x].value_counts()
-    if n is not None:
-        keep = vc[vc >= n].index
-    elif prop is not None:
-        props = vc/vc.sum()
-        keep = vc[props >= prop].index
-    return data[data[x].isin(keep)]
+    vc = x.value_counts()
+    return(x.replace(vc.index,vc))
+
+def cat_prop(x):
+    """Category Proportion
+    
+    Calculate the proportion of each category and return a series of the same length as x with
+    these proportions as values in place of the corresponding category. This can be used with 
+    filtering to remove less prevalent groups, or conversely to limit your search to only them.
+    
+    Parameters
+    ----------
+    x : pandas.Series
+    """
+    props = x.value_counts(normalize = True)
+    return(x.replace(props.index, props))
 
 def hampel_identifier(x):
     """Hampel Identifier
