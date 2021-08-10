@@ -87,7 +87,7 @@ def iqr_score(x, q = .25):
     scale = x.quantile(1-q)-x.quantile(q)
     return(x-x.median()/scale)
 
-def drop_outlier(data, x, method = standard_score, less = False val = 2, **kwargs):
+def drop_outlier(data, x, method = standard_score, val = 2, less = False, **kwargs):
     """Drop Outliers
     
     Drop rows from the dataframe based on whether they are outlying on the column specified
@@ -105,6 +105,8 @@ def drop_outlier(data, x, method = standard_score, less = False val = 2, **kwarg
         object, not the string of the name.
     val : numeric
         The critical value beyond which any value will be considered outlying.
+    less : bool
+        Should the value to drop be below the critical value?
     """
     if less:
         bool_mask = method(data[x], **kwargs).abs() > val
