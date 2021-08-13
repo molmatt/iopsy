@@ -13,6 +13,11 @@ class Analysis:
         self.x = x
         self.y = y
         self.filters = filters
+        for col, filts in filters.items():
+            if not isinstance(filts, list):
+                filts = [filts]
+            for filt in filts:
+                self.data = drop_outlier(self.data, col, **filt)
         self.p = None
         self.effect = None
         
